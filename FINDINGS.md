@@ -6,6 +6,16 @@ same "noisy background" complaint.
 
 ## TL;DR
 
+**Prompt structure is the biggest quality lever, not any hyperparameter.**
+
+After sweeping ~20 config combinations chasing "background noise" complaints,
+we found the actual cause: the model fills unspecified background space with
+hallucinated detail. Tell it explicitly what the background should look like
+(e.g., "soft gray seamless backdrop, uniform, out of focus") and the "noise"
+goes away. See `test_prompts/long_structured.txt` for the working recipe.
+
+Beyond prompt structure:
+
 LongLive 2.0 5B is built for **speed and long-form interactivity**, not photorealism.
 Its quality ceiling is roughly Wan 2.1 1.3B-tier (the base model lineage), and that
 ceiling is the same on CUDA H100s as it is on MPS — verified by:
@@ -20,6 +30,24 @@ ceiling is the same on CUDA H100s as it is on MPS — verified by:
 If your bar is sharp photorealistic single shots, look at Wan 2.2 base alone at
 40 UniPC steps (mlx-video supports it natively). LongLive's value is multi-shot
 narrative + minute-plus runtime + 20 FPS interactivity.
+
+## The fix: structured prompts with explicit background
+
+Short prompt ("close-up macro of water dripping from chrome faucet"):
+- Model hallucinates a chaotic dark background → reads as "noise"
+- Frame-to-frame the noise drifts → reads as "jittery"
+- All sweeping in this state did nothing
+
+Long structured prompt (~130 words, explicit camera move + background +
+lighting + composition rules, "no human hands or other objects"):
+- Background renders as clean uniform gray exactly as described
+- Subject is crisp, frame-to-frame stable
+- No post-process denoise needed
+
+Why: distilled few-step diffusion has no spare capacity to invent backgrounds.
+It commits early. Underspecified prompts → it commits to noise. Overspecified
+prompts → it commits to the structure you described. Same model, same weights,
+dramatic quality difference.
 
 ## What we swept (none of it moved the noise needle visibly)
 

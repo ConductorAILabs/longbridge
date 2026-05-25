@@ -91,16 +91,31 @@ Output lands in `ref/videos/mac_test/`.
 
 Latent H and W must be **even** — the patch embed expects it.
 
-## Quality realism
+## Quality recipe (PROMPT IS THE BIGGEST LEVER)
 
-We swept dozens of config combinations to chase cleaner output (sampling steps
-4-12, CFG 1.0-3.0, sink_size 4-8, local_attn_size 16-32, timestep_shift 3-5,
-negative prompts, inference_t_scale). The output ceiling is set by the model,
-not the port — see [`FINDINGS.md`](./FINDINGS.md) for the full research log.
+After sweeping dozens of config combinations, the **single biggest quality
+fix is prompt structure**, not any hyperparameter:
 
-Confirmed upstream fix that matters for everyone: `multi_shot_sink: true` in
-the config (NVlabs LongLive issue #20 + PR #21). The provided
-`configs/inference_mac.yaml` has this set correctly.
+| | Short terse prompt | Long structured prompt |
+|---|---|---|
+| Background | Noisy chaotic dark fill | Clean uniform gray |
+| Subject | Hard to read | Crisp chrome reflections |
+| Frame consistency | Drift | Stable across frames |
+
+The model fills unspecified background space with hallucinated detail — exactly
+what reads as "noise." Tell it explicitly what the background should look like
+("soft gray seamless backdrop", "uniform, out of focus") and the noise goes
+away.
+
+See [`test_prompts/long_structured.txt`](./ref/test_prompts/long_structured.txt)
+for the proven recipe (~130 words, present tense, single subject, explicit
+background descriptors, explicit camera direction).
+
+Also confirmed: `multi_shot_sink: true` in the config (upstream issue #20 / PR
+#21 fix). The provided `configs/inference_mac.yaml` has both right.
+
+See [`FINDINGS.md`](./FINDINGS.md) for the full research log of every knob
+we tried and what each one did (or didn't) do.
 
 ## Licensing
 
