@@ -160,7 +160,7 @@ This repository carries **two licenses**, both requiring attribution:
 | Upstream NVlabs/LongLive + Wan 2.2 code in `ref/` | Apache 2.0 |
 | **Conductor AI Labs patches + additions** (every `# Mac/MPS bridge:` line, `ref/scripts/`, `ref/configs/inference_mac.yaml`, `ref/test_prompts/long_structured.txt`, `ref/test_prompts/subj_*.txt`, `ref/sweep_prompt.sh`, `ref/_sweep_lib.sh`, `ref/sweep_v2.sh`, all docs) | **CC BY 4.0** |
 
-You may use, share, adapt — including commercially — **provided you credit Conductor AI Labs** for the Apple Silicon bridge work.
+Our CC BY 4.0 grant covers **only the Conductor AI Labs patches and additions** listed above. You may use, share, and adapt those — **including commercially** — provided you credit Conductor AI Labs.
 
 **Required attribution** (or substantially equivalent):
 
@@ -168,11 +168,24 @@ You may use, share, adapt — including commercially — **provided you credit C
 
 Place this in your README or NOTICE file when redistributing. For papers, blog posts, demos, or videos that describe a derived work, include an equivalent credit line.
 
-**Model weights** (downloaded separately):
-- Wan 2.2 TI2V-5B base: Apache 2.0
-- LongLive-2.0-5B fine-tune: CC BY-NC-SA 4.0 (research only — non-commercial)
+### ⚠️ Our license does NOT cover NVIDIA's or Alibaba's models
 
-For commercial output, use Wan 2.2 base alone (mlx-video supports it natively); the LongLive fine-tune is research-only by NVIDIA's license.
+This repo only patches code to make the upstream stack run on Mac. **Our CC BY 4.0 grant does not license the models you'll download and run.** You are responsible for verifying NVIDIA's and Alibaba's terms before any use, especially commercial use.
+
+**Model weights** (downloaded separately, NOT in this repo):
+
+| Model | License | Commercial use? |
+|---|---|---|
+| Wan-AI/Wan2.2-TI2V-5B (base) | Apache 2.0 | Yes, per Apache 2.0 terms |
+| Efficient-Large-Model/LongLive-2.0-5B (NVIDIA fine-tune) | **CC BY-NC-SA 4.0** | **No — non-commercial only** |
+
+**If you generate output with the LongLive-2.0-5B weights, the NVIDIA non-commercial license applies to that output, regardless of what this repo says.** Our CC BY 4.0 only governs the bridge code.
+
+For commercial output, use the Wan 2.2 base alone (mlx-video supports it natively) and confirm Wan's then-current terms at https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B.
+
+For LongLive's terms, check: https://huggingface.co/Efficient-Large-Model/LongLive-2.0-5B and https://github.com/NVlabs/LongLive
+
+When in doubt: read each model card before downloading, and assume the most restrictive license in the chain applies to your output.
 
 ### Cite
 

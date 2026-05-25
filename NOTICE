@@ -24,6 +24,15 @@ Model weights (downloaded separately, NOT in this repo):
   Wan-AI/Wan2.2-TI2V-5B               — Apache 2.0
   Efficient-Large-Model/LongLive-2.0-5B — CC BY-NC-SA 4.0 (research only)
 
+IMPORTANT: The Conductor AI Labs CC BY 4.0 grant covers ONLY the patches and
+additions listed above. It does NOT cover NVIDIA's or Alibaba's model weights.
+You are responsible for reviewing those licenses BEFORE any use, especially
+commercial use. Output generated with the LongLive-2.0-5B fine-tune is
+non-commercial (CC BY-NC-SA 4.0) regardless of how this code is licensed.
+
+  - Wan 2.2: https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B
+  - LongLive 2.0: https://huggingface.co/Efficient-Large-Model/LongLive-2.0-5B
+
 ----------------------------------------------------------------------------
 HOW TO ATTRIBUTE
 ----------------------------------------------------------------------------

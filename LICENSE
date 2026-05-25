@@ -60,10 +60,26 @@ This attribution must appear in:
 3. MODEL WEIGHTS (NOT distributed with this code)
 ----------------------------------------------------------------------------
 
+The CC BY 4.0 grant above covers ONLY the Conductor AI Labs patches and
+additions. It does NOT license, sublicense, or otherwise affect the model
+weights you will download and run with this code.
+
   - Wan-AI/Wan2.2-TI2V-5B               — Apache 2.0
   - Efficient-Large-Model/LongLive-2.0-5B — CC BY-NC-SA 4.0 (non-commercial)
 
 Each weight set is downloaded separately and governed by its own license.
+
+YOU ARE RESPONSIBLE FOR REVIEWING NVIDIA'S AND ALIBABA'S LICENSES BEFORE
+USE — ESPECIALLY ANY COMMERCIAL USE. If you generate output with the
+NVIDIA LongLive-2.0-5B fine-tune, that output is governed by CC BY-NC-SA
+4.0 (non-commercial), regardless of the license on this code.
+
+Authoritative sources:
+  - Wan 2.2 TI2V-5B: https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B
+  - LongLive-2.0-5B: https://huggingface.co/Efficient-Large-Model/LongLive-2.0-5B
+  - LongLive upstream: https://github.com/NVlabs/LongLive
+
+Assume the most restrictive license in the chain applies to your output.
 
 ----------------------------------------------------------------------------
 4. APACHE 2.0 FULL TEXT (for upstream code)
