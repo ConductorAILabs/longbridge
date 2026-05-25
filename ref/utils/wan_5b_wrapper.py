@@ -38,9 +38,9 @@ class WanTextEncoder(torch.nn.Module):
             name="wan_models/Wan2.2-TI2V-5B/google/umt5-xxl/", seq_len=512, clean='whitespace')
 
     @property
-    def device(self):
-        # Mac/MPS bridge: was hard-coded `torch.cuda.current_device()`.
-        # Use the encoder's actual device parameter instead.
+    def device(self) -> torch.device:
+        # Mac/MPS bridge: read the encoder's actual parameter device rather
+        # than `torch.cuda.current_device()`, which fails when CUDA is absent.
         try:
             return next(self.text_encoder.parameters()).device
         except (AttributeError, StopIteration):
@@ -383,7 +383,7 @@ class WanDiffusionWrapper(torch.nn.Module):
         # use higher precision for calculations
         original_dtype = flow_pred.dtype
         # Mac/MPS bridge: MPS doesn't support fp64. Use fp32 instead.
-        hi_dtype = torch.float32 if flow_pred.device.type == 'mps' else torch.float64
+        hi_dtype: torch.dtype = torch.float32 if flow_pred.device.type == 'mps' else torch.float64
         flow_pred, xt, sigmas, timesteps = map(
             lambda x: x.to(hi_dtype).to(flow_pred.device), [flow_pred, xt,
                                                         self.scheduler.sigmas,
@@ -409,7 +409,7 @@ class WanDiffusionWrapper(torch.nn.Module):
         # use higher precision for calculations
         original_dtype = x0_pred.dtype
         # Mac/MPS bridge: MPS doesn't support fp64. Use fp32 instead.
-        hi_dtype = torch.float32 if x0_pred.device.type == 'mps' else torch.float64
+        hi_dtype: torch.dtype = torch.float32 if x0_pred.device.type == 'mps' else torch.float64
         x0_pred, xt, sigmas, timesteps = map(
             lambda x: x.to(hi_dtype).to(x0_pred.device), [x0_pred, xt,
                                                       scheduler.sigmas,

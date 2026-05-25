@@ -1,18 +1,47 @@
 longbridge
 Copyright 2026 Conductor AI Labs (https://www.conductorailabs.com)
 
-This product includes software developed by NVIDIA Corporation and contributors:
-  NVlabs/LongLive (https://github.com/NVlabs/LongLive)
-  Licensed under the Apache License, Version 2.0
+ATTRIBUTION REQUIRED. See LICENSE for the full terms.
 
-This product includes weights and architecture from:
-  Wan-AI/Wan2.2-TI2V-5B (Apache 2.0 license)
-  Efficient-Large-Model/LongLive-2.0-5B (CC-BY-NC-SA-4.0 — research use only)
+----------------------------------------------------------------------------
+COMPONENTS
+----------------------------------------------------------------------------
 
-Patches in this repository are derivative work of NVlabs/LongLive and
-inherit the same Apache 2.0 license. See LICENSE for the full text and
-PATCHES.md for the catalog of changes applied to enable Apple Silicon
-(MPS) inference.
+Upstream code (Apache 2.0):
+  NVlabs/LongLive (https://github.com/NVlabs/LongLive) — Copyright NVIDIA
+  Wan-Video/Wan2.2 (https://github.com/Wan-Video/Wan2.2) — Copyright Alibaba
+
+Conductor AI Labs additions (CC BY 4.0):
+  - All `# Mac/MPS bridge:` patches inside `ref/`
+  - `ref/scripts/static_bg.py` (temporal-median background lock post-process)
+  - `ref/configs/inference_mac.yaml`
+  - `ref/test_prompts/long_structured.txt`
+  - `ref/sweep_prompt.sh` + `ref/_sweep_lib.sh`
+  - `README.md`, `FINDINGS.md`, `PATCHES.md`, `CLEANUP_NOTES.md`
+
+Model weights (downloaded separately, NOT in this repo):
+  Wan-AI/Wan2.2-TI2V-5B               — Apache 2.0
+  Efficient-Large-Model/LongLive-2.0-5B — CC BY-NC-SA 4.0 (research only)
+
+----------------------------------------------------------------------------
+HOW TO ATTRIBUTE
+----------------------------------------------------------------------------
+
+If you redistribute, fork, or build on the Conductor AI Labs additions
+(including the Apple Silicon bridge patches), include the following notice
+in your project's README or NOTICE file:
+
+    Apple Silicon (MPS) bridge for NVIDIA LongLive 2.0 by Conductor AI Labs
+    https://www.conductorailabs.com
+    Source: https://github.com/ConductorAILabs/longbridge
+    Licensed under CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+
+For papers, blog posts, demos, and videos that describe a derived work,
+include an equivalent credit line and a link to this repository.
+
+----------------------------------------------------------------------------
+LINEAGE
+----------------------------------------------------------------------------
 
 The patching playbook and several MPS workarounds (real-arithmetic RoPE,
 fp64-to-fp32 schedulers, write_video imageio shim) build on prior MPS

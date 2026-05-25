@@ -456,7 +456,7 @@ class SelfForcingModel(BaseModel):
                 break
 
         # Mac/MPS bridge: `.cuda()` is CUDA-only. Use unipc's actual device.
-        _d = unipc_timesteps.device
+        _d: torch.device = unipc_timesteps.device
         # Compute denoised_timestep_from / to
         if exit_step == num_denoising_steps - 1:
             denoised_timestep_to = 0

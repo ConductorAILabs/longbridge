@@ -2,13 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 
-# Mac/MPS bridge: `x_clip_loss` was removed in newer transformers and is not
-# referenced anywhere else in this file. Import was dead. Stub for safety.
+# Mac/MPS bridge: `x_clip_loss` is absent from newer transformers and is only
+# used on training paths. Stub raises if invoked so import-time succeeds.
+from typing import NoReturn
 try:
     from transformers.models.x_clip.modeling_x_clip import x_clip_loss
 except ImportError:
-    def x_clip_loss(*args, **kwargs):
-        raise NotImplementedError("x_clip_loss removed from transformers; only training uses it")
+    def x_clip_loss(*args: object, **kwargs: object) -> NoReturn:
+        raise NotImplementedError("x_clip_loss absent from transformers; training-only")
 from wan_5b.modules.attention import attention
 from wan_5b.modules.model import (
     WanRMSNorm,
@@ -48,8 +49,8 @@ def causal_rope_apply(x, grid_sizes, freqs, start_frame=0, t_scale=1.0,
     # split freqs
     freqs = freqs.split([c - 2 * (c // 3), c // 3, c // 3], dim=1)
 
-    # Mac/MPS bridge: view_as_complex + fp64 unsupported on MPS. Use explicit
-    # real arithmetic on MPS, original CUDA path elsewhere.
+    # Mac/MPS bridge: MPS supports neither `view_as_complex` nor fp64. Branch
+    # to explicit (a+ib)(c+id) real-arithmetic on MPS; CUDA keeps its path.
     is_mps = x.device.type == 'mps'
 
     # loop over samples
@@ -83,7 +84,7 @@ def causal_rope_apply(x, grid_sizes, freqs, start_frame=0, t_scale=1.0,
             x_i = torch.stack([o_re, o_im], dim=-1).flatten(2)
             x_i = torch.cat([x_i, x[i, seq_len:]])
         else:
-            # Original CUDA path: keep fp64/view_as_complex.
+            # CUDA path: fp64 + view_as_complex.
             x_i = torch.view_as_complex(x[i, :seq_len].to(torch.float64).reshape(
                 seq_len, n, -1, 2))
             freqs_i = torch.cat([

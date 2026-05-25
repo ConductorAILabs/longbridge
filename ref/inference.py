@@ -10,8 +10,10 @@ try:
     from torchvision.io import write_video
 except ImportError:
     import imageio.v3 as iio
+    from typing import Union
+    from pathlib import Path as _Path
 
-    def write_video(filename, video, fps=16):
+    def write_video(filename: Union[str, _Path], video: "torch.Tensor", fps: int = 16) -> None:
         frames = video.cpu().numpy() if hasattr(video, "cpu") else video
         iio.imwrite(str(filename), frames, fps=fps, codec="libx264")
 from einops import rearrange
@@ -234,7 +236,7 @@ def configure_generator_torch_compile(pipeline, config):
 
 # Mac/MPS bridge: pick a usable device (cuda > mps > cpu) and skip nccl
 # init when CUDA isn't actually present.
-def _pick_device():
+def _pick_device() -> torch.device:
     if torch.cuda.is_available():
         return torch.device("cuda")
     if torch.backends.mps.is_available():
@@ -415,9 +417,8 @@ if loaded_prequantized_generator:
 else:
     pipeline = pipeline.to(dtype=torch.bfloat16)
 
-# Mac/MPS bridge experiment: keep VAE in fp32 to fight high-frequency grain
-# from bf16 chroma accumulation in the decoder. Gated by env var so the
-# default behavior (bf16) is preserved.
+# Mac/MPS bridge: optional fp32 VAE to fight high-frequency grain from bf16
+# chroma accumulation in the MPS decoder. Env-gated so default stays bf16.
 if os.environ.get("LONGBRIDGE_VAE_FP32", "0") == "1":
     print("[inference] LONGBRIDGE_VAE_FP32=1 — casting VAE to float32 for cleaner decode")
     pipeline.vae.to(dtype=torch.float32)

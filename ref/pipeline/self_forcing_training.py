@@ -10,8 +10,10 @@ try:
     from torchvision.io import write_video
 except ImportError:
     import imageio.v3 as iio
+    from typing import Union
+    from pathlib import Path as _Path
 
-    def write_video(filename, video, fps=16):
+    def write_video(filename: Union[str, _Path], video: "torch.Tensor", fps: int = 16) -> None:
         frames = video.cpu().numpy() if hasattr(video, "cpu") else video
         iio.imwrite(str(filename), frames, fps=fps, codec="libx264")
 

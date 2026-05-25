@@ -151,21 +151,30 @@ Also confirmed: `multi_shot_sink: true` in the config (upstream issue #20 / PR
 See [`FINDINGS.md`](./FINDINGS.md) for the full research log of every knob
 we tried and what each one did (or didn't) do.
 
-## Licensing
+## License & attribution
 
-- **Code** (this repo + upstream LongLive 2.0): Apache 2.0
-- **Model weights**:
-  - Wan 2.2 TI2V-5B base: Apache 2.0
-  - **LongLive-2.0-5B fine-tune: CC-BY-NC-SA 4.0** (non-commercial)
+This repository carries **two licenses**, both requiring attribution:
 
-If you need commercial output, use the Wan 2.2 base alone (mlx-video has it natively).
-The LongLive layer is research-only.
+| Component | License |
+|---|---|
+| Upstream NVlabs/LongLive + Wan 2.2 code in `ref/` | Apache 2.0 |
+| **Conductor AI Labs patches + additions** (every `# Mac/MPS bridge:` line, `ref/scripts/`, `ref/configs/inference_mac.yaml`, `ref/test_prompts/long_structured.txt`, `ref/sweep_prompt.sh`, `ref/_sweep_lib.sh`, all docs) | **CC BY 4.0** |
 
-## Attribution
+You may use, share, adapt — including commercially — **provided you credit Conductor AI Labs** for the Apple Silicon bridge work.
 
-Maintained by **[Conductor AI Labs](https://www.conductorailabs.com)**.
+**Required attribution** (or substantially equivalent):
 
-If this bridge helps your work, please cite the upstream papers and link back to this repo:
+> Apple Silicon (MPS) bridge for NVIDIA LongLive 2.0 by **[Conductor AI Labs](https://www.conductorailabs.com)** · Source: https://github.com/ConductorAILabs/longbridge · CC BY 4.0
+
+Place this in your README or NOTICE file when redistributing. For papers, blog posts, demos, or videos that describe a derived work, include an equivalent credit line.
+
+**Model weights** (downloaded separately):
+- Wan 2.2 TI2V-5B base: Apache 2.0
+- LongLive-2.0-5B fine-tune: CC BY-NC-SA 4.0 (research only — non-commercial)
+
+For commercial output, use Wan 2.2 base alone (mlx-video supports it natively); the LongLive fine-tune is research-only by NVIDIA's license.
+
+### Cite
 
 ```bibtex
 @misc{longbridge2026,
@@ -173,6 +182,7 @@ If this bridge helps your work, please cite the upstream papers and link back to
   author = {Conductor AI Labs},
   year   = {2026},
   howpublished = {\url{https://github.com/ConductorAILabs/longbridge}},
+  note   = {CC BY 4.0},
 }
 ```
 

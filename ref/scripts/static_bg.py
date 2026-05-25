@@ -1,28 +1,20 @@
-"""Post-process: lock background pixels to the temporal median, keep moving
-subjects untouched. Kills the inter-frame wall flicker that LongLive 2.0 / Wan
-2.2 produce in unspecified background regions.
+"""Lock low-motion pixels to the temporal median, keep moving subjects.
 
-Algorithm:
-  1. Compute per-pixel temporal median across all frames → "background plate"
-  2. For each frame: compute |frame - median| as motion signal
-  3. Threshold + dilate + Gaussian-blur the motion mask
-  4. Composite: motion_mask * original + (1 - motion_mask) * median
-
-Result: wall pixels (no motion → low diff) lock to a single static value
-across the whole clip. Subject pixels (water flow, reflections → high diff)
-pass through unchanged. Typical: 2-15% of frame is "subject", the rest goes
-static.
+Kills the inter-frame wall flicker that LongLive 2.0 / Wan 2.2 produce in
+unspecified background regions. Per-frame |frame - median| seeds a soft mask
+(threshold -> dilate -> Gaussian blur); the mask composites original over
+median. Typical: 2-15% of frame stays "subject", the rest locks static.
 
 Usage:
     python scripts/static_bg.py input.mp4 output.mp4 [--threshold 25]
 
-  --threshold N   (default 25, 0-255 scale) motion-detection threshold.
-                  Lower = more pixels classified as foreground = less locking.
-                  Higher = more pixels locked. 15-35 is the useful range.
+--threshold N (0-255, default 25): motion detection cutoff. Lower = more
+              pixels treated as foreground. 15-35 is the useful range.
 """
 import argparse
 import sys
 from pathlib import Path
+from typing import List
 
 import cv2
 import numpy as np
@@ -31,10 +23,10 @@ import numpy as np
 def static_bg(input_path: Path, output_path: Path, threshold: float = 25.0,
               dilate: int = 11, blur: int = 21) -> None:
     cap = cv2.VideoCapture(str(input_path))
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frames = []
+    fps: float = cap.get(cv2.CAP_PROP_FPS)
+    width: int = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height: int = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frames: List[np.ndarray] = []
     while True:
         ok, frame = cap.read()
         if not ok:
@@ -44,11 +36,11 @@ def static_bg(input_path: Path, output_path: Path, threshold: float = 25.0,
     if not frames:
         raise RuntimeError(f"no frames decoded from {input_path}")
 
-    stack = np.stack(frames, axis=0)
-    median = np.median(stack, axis=0)
+    stack: np.ndarray = np.stack(frames, axis=0)
+    median: np.ndarray = np.median(stack, axis=0)
 
-    fg_pct_acc = 0.0
-    out_frames = []
+    fg_pct_acc: float = 0.0
+    out_frames: List[np.ndarray] = []
     for frame in frames:
         diff = np.abs(frame - median).mean(axis=2)
         mask = (diff > threshold).astype(np.uint8) * 255
@@ -65,7 +57,7 @@ def static_bg(input_path: Path, output_path: Path, threshold: float = 25.0,
         fg_pct_acc += float(mask.mean())
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    tmp = str(output_path.with_suffix(".tmp.mp4"))
+    tmp: str = str(output_path.with_suffix(".tmp.mp4"))
     writer = cv2.VideoWriter(tmp, fourcc, fps, (width, height))
     for frame in out_frames:
         writer.write(frame)

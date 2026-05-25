@@ -2,6 +2,7 @@
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import logging
 import math
+from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -473,9 +474,10 @@ class T5EncoderModel:
         self,
         text_len,
         dtype=torch.bfloat16,
-        # Mac/MPS bridge: was `torch.cuda.current_device()` which crashed at
-        # class-definition time on CUDA-less boxes. None => caller chooses.
-        device=None,
+        # Mac/MPS bridge: default to None so the device pick happens at call
+        # time. Evaluating `torch.cuda.current_device()` at class-definition
+        # time would crash module import on CUDA-less boxes.
+        device: Optional[torch.device] = None,
         checkpoint_path=None,
         tokenizer_path=None,
         shard_fn=None,
