@@ -117,6 +117,21 @@ These are speculative and may or may not help:
 4. **Post-process ffmpeg `hqdn3d` denoise** — won't add detail but cleans up
    the worst frame-to-frame chroma noise. Cheap, fast, no model change.
 
+## Cross-subject verification (recipe transfers)
+
+After locking the recipe on the chrome-faucet test prompt, we ran a 5-subject
+sweep at 512×896 with VAE fp32 + `multi_shot_sink: true` + the long structured
+prompt format (one per subject) + `static_bg.py` post-process. Subjects: chrome
+faucet, white toilet, undermount sink, walk-in shower with running water,
+freestanding tub. Render times 128–169s on M5 Max; the heavier-motion shower
+took the longest. The recipe held across all five — clean backgrounds, locked
+walls, motion preserved on water and reflections. See `ref/sweep_v2.sh` for
+the exact harness.
+
+The takeaway: the wins documented above (prompt structure + VAE fp32 +
+multi_shot_sink + temporal-median post-process) are subject-agnostic, not
+overfit to one test prompt.
+
 ## What we'd recommend for production
 
 For Conductor AI Labs' own work:

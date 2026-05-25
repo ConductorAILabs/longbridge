@@ -25,7 +25,8 @@ inference — including but not limited to:
   - `ref/scripts/static_bg.py`
   - `ref/configs/inference_mac.yaml`
   - `ref/test_prompts/long_structured.txt`
-  - `ref/sweep_prompt.sh` + `ref/_sweep_lib.sh`
+  - `ref/sweep_prompt.sh` + `ref/_sweep_lib.sh` + `ref/sweep_v2.sh`
+  - `ref/test_prompts/subj_*.txt` (per-subject prompt files)
   - `README.md`, `FINDINGS.md`, `PATCHES.md`, `NOTICE`, `CLEANUP_NOTES.md`
 
 …are licensed under the Creative Commons Attribution 4.0 International

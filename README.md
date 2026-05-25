@@ -158,7 +158,7 @@ This repository carries **two licenses**, both requiring attribution:
 | Component | License |
 |---|---|
 | Upstream NVlabs/LongLive + Wan 2.2 code in `ref/` | Apache 2.0 |
-| **Conductor AI Labs patches + additions** (every `# Mac/MPS bridge:` line, `ref/scripts/`, `ref/configs/inference_mac.yaml`, `ref/test_prompts/long_structured.txt`, `ref/sweep_prompt.sh`, `ref/_sweep_lib.sh`, all docs) | **CC BY 4.0** |
+| **Conductor AI Labs patches + additions** (every `# Mac/MPS bridge:` line, `ref/scripts/`, `ref/configs/inference_mac.yaml`, `ref/test_prompts/long_structured.txt`, `ref/test_prompts/subj_*.txt`, `ref/sweep_prompt.sh`, `ref/_sweep_lib.sh`, `ref/sweep_v2.sh`, all docs) | **CC BY 4.0** |
 
 You may use, share, adapt — including commercially — **provided you credit Conductor AI Labs** for the Apple Silicon bridge work.
 
