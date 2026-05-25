@@ -1,0 +1,40 @@
+# LongLive 2.0 5B inference on Mac (MPS, bf16, no NVFP4)
+model_kwargs:
+  model_name: Wan2.2-TI2V-5B
+  timestep_shift: 5.0
+  num_frame_per_block: 8
+  local_attn_size: 32
+
+use_ema: false
+output_folder: videos/mac_test
+num_samples: 1
+save_latents_only: false
+
+data:
+  data_path: test_prompts/single.txt
+  image_or_video_shape:
+  - 1
+  - 8         # 8 latent frames — single block, smallest test
+  - 48
+  - 22        # half H
+  - 40        # half W
+
+inference:
+  sampling_steps: 4
+  sink_size: 8
+  guidance_scale: 1.0
+  multi_shot_sink: false
+  multi_shot_rope_offset: 0
+  streaming_vae: false   # cached_decode not available on WanVAE — use smaller res instead
+  async_vae: false
+  vae_type: wan
+  vae_device: "mps"
+
+checkpoints:
+  generator_ckpt: longlive_models/LongLive-2.0-5B/model_bf16.pt
+
+# No quantization — bf16 path only.
+# model_quant left unset / false.
+
+logging:
+  seed: 0

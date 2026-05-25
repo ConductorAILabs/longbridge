@@ -1,0 +1,26 @@
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+------------------------------------------------------------------------------
+
+This repository contains patched source code from NVlabs/LongLive
+(https://github.com/NVlabs/LongLive), originally licensed under Apache 2.0
+by NVIDIA Corporation. Patches in this repository are derivative work and
+inherit the same Apache 2.0 license.
+
+Model weights are NOT distributed with this code. They have their own licenses:
+  - Wan-AI/Wan2.2-TI2V-5B: Apache 2.0
+  - Efficient-Large-Model/LongLive-2.0-5B: CC-BY-NC-SA 4.0 (research only)
