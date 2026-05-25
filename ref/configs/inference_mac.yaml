@@ -14,18 +14,21 @@ data:
   data_path: test_prompts/single.txt
   image_or_video_shape:
   - 1
-  - 8         # 8 latent frames — single block, smallest test
+  - 8         # 8 latent frames (1 block) — single-block test
   - 48
-  - 22        # half H
-  - 40        # half W
+  - 44        # native H latent
+  - 80        # native W latent
 
 inference:
   sampling_steps: 4
   sink_size: 8
   guidance_scale: 1.0
-  multi_shot_sink: false
-  multi_shot_rope_offset: 0
-  streaming_vae: false   # cached_decode not available on WanVAE — use smaller res instead
+  # CRITICAL: official defaults are TRUE / 8. Issue #20/PR #21 documents
+  # that having these off corrupts the KV sink across frames, producing
+  # exactly the "noisy background drift" we were seeing.
+  multi_shot_sink: true
+  multi_shot_rope_offset: 8
+  streaming_vae: false
   async_vae: false
   vae_type: wan
   vae_device: "mps"

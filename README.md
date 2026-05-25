@@ -2,9 +2,11 @@
 
 **Run NVIDIA LongLive 2.0 5B on Apple Silicon (Mac, MPS) — no CUDA, no NVFP4, no flash-attn.**
 
-A PyTorch+MPS bridge for [NVlabs/LongLive 2.0](https://github.com/NVlabs/LongLive). 16 in-place patches to the upstream code that swap CUDA-only paths for Mac-friendly equivalents. The model runs natively in bf16 on Apple Silicon — base Wan 2.2 TI2V-5B + LongLive 2.0 fine-tune.
+A PyTorch+MPS bridge for [NVlabs/LongLive 2.0](https://github.com/NVlabs/LongLive). In-place patches to the upstream code that swap CUDA-only paths for Mac-friendly equivalents. The model runs natively in bf16 on Apple Silicon — base Wan 2.2 TI2V-5B + LongLive 2.0 fine-tune.
 
-Verified working: M-series Macs with 96GB+ unified memory.
+> First public MLX/MPS port of LongLive 2.0. Verified end-to-end on M5 Max with 128GB unified memory.
+
+Built by **[Conductor AI Labs](https://www.conductorailabs.com)** as part of our work on local-first AI video infrastructure.
 
 ## What this is
 
@@ -27,7 +29,7 @@ needed to run the bf16 inference path on MPS:
 - Use `psutil` for memory reporting instead of `torch.cuda.memory_stats`
 - Stub training-only deps (`decord`, `x_clip_loss`) that aren't on PyPI for arm64
 
-See [`PATCHES.md`](./PATCHES.md) for the full list with file:line references.
+See [`PATCHES.md`](./PATCHES.md) for the full patch catalog with file:line references, and [`FINDINGS.md`](./FINDINGS.md) for what we learned about LongLive's quality ceiling during this work.
 
 ## Setup
 
@@ -89,6 +91,17 @@ Output lands in `ref/videos/mac_test/`.
 
 Latent H and W must be **even** — the patch embed expects it.
 
+## Quality realism
+
+We swept dozens of config combinations to chase cleaner output (sampling steps
+4-12, CFG 1.0-3.0, sink_size 4-8, local_attn_size 16-32, timestep_shift 3-5,
+negative prompts, inference_t_scale). The output ceiling is set by the model,
+not the port — see [`FINDINGS.md`](./FINDINGS.md) for the full research log.
+
+Confirmed upstream fix that matters for everyone: `multi_shot_sink: true` in
+the config (NVlabs LongLive issue #20 + PR #21). The provided
+`configs/inference_mac.yaml` has this set correctly.
+
 ## Licensing
 
 - **Code** (this repo + upstream LongLive 2.0): Apache 2.0
@@ -98,6 +111,21 @@ Latent H and W must be **even** — the patch embed expects it.
 
 If you need commercial output, use the Wan 2.2 base alone (mlx-video has it natively).
 The LongLive layer is research-only.
+
+## Attribution
+
+Maintained by **[Conductor AI Labs](https://www.conductorailabs.com)**.
+
+If this bridge helps your work, please cite the upstream papers and link back to this repo:
+
+```bibtex
+@misc{longbridge2026,
+  title  = {longbridge: NVIDIA LongLive 2.0 on Apple Silicon},
+  author = {Conductor AI Labs},
+  year   = {2026},
+  howpublished = {\url{https://github.com/ConductorAILabs/longbridge}},
+}
+```
 
 ## Acknowledgements
 

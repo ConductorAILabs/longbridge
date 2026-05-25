@@ -121,6 +121,16 @@ When neither FA2 nor FA3 is installed, route to
 `scaled_dot_product_attention` at the top of `flash_attention()`. CUDA-device
 assertion is gated on `torch.cuda.is_available()`.
 
+## 19. `configs/inference_mac.yaml` — `multi_shot_sink: true`
+
+Not a code patch — a **config default everyone gets wrong.** Upstream issue
+[#20](https://github.com/NVlabs/LongLive/issues/20) + [PR #21](https://github.com/NVlabs/LongLive/pull/21)
+document that having `multi_shot_sink: false` corrupts the KV cache sink region
+permanently — exactly the "noisy background drift" everyone complains about.
+Maintainer flipped the default to `true` and confirmed *"Global_sink == True
+leads to better consistency."* Our shipped `configs/inference_mac.yaml` has
+this set correctly. Issue: hold onto this setting in any forked configs.
+
 ## Known unpatched (not exercised on inference path)
 
 - `utils/wan_5b_wrapper.py:265` — `torch.cuda.empty_cache()`. Will silently

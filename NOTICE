@@ -1,0 +1,19 @@
+longbridge
+Copyright 2026 Conductor AI Labs (https://www.conductorailabs.com)
+
+This product includes software developed by NVIDIA Corporation and contributors:
+  NVlabs/LongLive (https://github.com/NVlabs/LongLive)
+  Licensed under the Apache License, Version 2.0
+
+This product includes weights and architecture from:
+  Wan-AI/Wan2.2-TI2V-5B (Apache 2.0 license)
+  Efficient-Large-Model/LongLive-2.0-5B (CC-BY-NC-SA-4.0 — research use only)
+
+Patches in this repository are derivative work of NVlabs/LongLive and
+inherit the same Apache 2.0 license. See LICENSE for the full text and
+PATCHES.md for the catalog of changes applied to enable Apple Silicon
+(MPS) inference.
+
+The patching playbook and several MPS workarounds (real-arithmetic RoPE,
+fp64-to-fp32 schedulers, write_video imageio shim) build on prior MPS
+bridge work the Conductor AI Labs team did against NVIDIA SANA-WM.
