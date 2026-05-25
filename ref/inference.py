@@ -414,6 +414,13 @@ if loaded_prequantized_generator:
     pipeline.vae.to(dtype=torch.bfloat16)
 else:
     pipeline = pipeline.to(dtype=torch.bfloat16)
+
+# Mac/MPS bridge experiment: keep VAE in fp32 to fight high-frequency grain
+# from bf16 chroma accumulation in the decoder. Gated by env var so the
+# default behavior (bf16) is preserved.
+if os.environ.get("LONGBRIDGE_VAE_FP32", "0") == "1":
+    print("[inference] LONGBRIDGE_VAE_FP32=1 — casting VAE to float32 for cleaner decode")
+    pipeline.vae.to(dtype=torch.float32)
 if low_memory:
     DynamicSwapInstaller.install_model(pipeline.text_encoder, device=device)
 pipeline.generator.to(device=device)

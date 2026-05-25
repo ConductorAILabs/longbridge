@@ -200,7 +200,15 @@ class WanVAEWrapper(torch.nn.Module):
         if use_cache:
             assert latent.shape[0] == 1, "Batch size must be 1 when using cache"
 
-        device, dtype = latent.device, latent.dtype
+        # Mac/MPS bridge: match the latent dtype to the VAE weight dtype.
+        # When VAE is cast to fp32 to fight bf16 conv-noise on MPS, latents
+        # coming in from the bf16 DiT must be upcast or conv will throw
+        # "Input type (BFloat16) and bias type (float) should be the same".
+        vae_param = next(self.model.parameters(), None)
+        if vae_param is not None and zs.dtype != vae_param.dtype:
+            zs = zs.to(dtype=vae_param.dtype)
+
+        device, dtype = zs.device, zs.dtype
         scale = [self.mean.to(device=device, dtype=dtype),
                  1.0 / self.std.to(device=device, dtype=dtype)]
 
@@ -221,12 +229,12 @@ class WanVAEWrapper(torch.nn.Module):
     def decode_to_pixel_chunk(self, latent: torch.Tensor, use_cache: bool = False, chunk_size: int = 1) -> torch.Tensor:
         """
         Decode latent frames to pixel space.
-        
+
         Args:
             latent: Latent tensor with shape [batch_size, num_frames, num_channels, height, width]
             use_cache: Whether to use cached decoding (for streaming)
             chunk_size: Number of latent frames to decode at once (default 240 to avoid OOM)
-        
+
         Returns:
             Decoded video tensor with shape [batch_size, num_frames, num_channels, height, width]
         """
@@ -236,7 +244,12 @@ class WanVAEWrapper(torch.nn.Module):
         if use_cache:
             assert latent.shape[0] == 1, "Batch size must be 1 when using cache"
 
-        device, dtype = latent.device, latent.dtype
+        # Mac/MPS bridge: match latent dtype to VAE weight dtype (see decode_to_pixel).
+        vae_param = next(self.model.parameters(), None)
+        if vae_param is not None and zs.dtype != vae_param.dtype:
+            zs = zs.to(dtype=vae_param.dtype)
+
+        device, dtype = zs.device, zs.dtype
         scale = [self.mean.to(device=device, dtype=dtype),
                  1.0 / self.std.to(device=device, dtype=dtype)]
 

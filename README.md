@@ -59,8 +59,21 @@ HF_HUB_DISABLE_XET=1 .venv/bin/huggingface-cli download ...
 
 ```bash
 cd ref
-PYTORCH_ENABLE_MPS_FALLBACK=1 PYTHONPATH=. ../.venv/bin/python inference.py \
+
+# Generate. LONGBRIDGE_VAE_FP32=1 forces fp32 VAE decode — fights the
+# bf16 chroma noise that MPS introduces in the high-compression Wan 2.2 VAE.
+# Costs ~1.5GB extra RAM, so drop to 512x896 or 640x1152 res unless you
+# have headroom at 704x1280.
+LONGBRIDGE_VAE_FP32=1 PYTORCH_ENABLE_MPS_FALLBACK=1 PYTHONPATH=. \
+  ../.venv/bin/python inference.py \
   --config_path configs/inference_mac.yaml
+
+# Post-process: lock background to temporal median (kills inter-frame wall
+# flicker, keeps subject motion). Usually drops "noise" complaint to zero.
+../.venv/bin/python scripts/static_bg.py \
+  videos/mac_test/rank0-*.mp4 \
+  videos/mac_test/clean.mp4 \
+  --threshold 25
 ```
 
 Output lands in `ref/videos/mac_test/`.
@@ -91,7 +104,28 @@ Output lands in `ref/videos/mac_test/`.
 
 Latent H and W must be **even** — the patch embed expects it.
 
-## Quality recipe (PROMPT IS THE BIGGEST LEVER)
+## Quality recipe (two big wins, in order)
+
+### 1. Background-flicker post-process
+
+The single biggest visual win. LongLive 2.0 / Wan 2.2 generate each frame
+somewhat independently, so flat-color regions (walls, backdrops) get
+slightly different speckle each frame — reads as constant background
+flicker even when prompt and config are perfect. Foreground stays locked
+because chrome reflections + water have strong anchoring features.
+
+Fix: compute per-pixel temporal median across all frames, then for each
+frame, blend toward median wherever motion magnitude is low. Wall snaps to
+a single static value; subject motion passes through.
+
+```bash
+python scripts/static_bg.py raw.mp4 clean.mp4 --threshold 25
+```
+
+Typical result: 85-97% of every frame locks to median. Subject still moves.
+No model re-run.
+
+### 2. Prompt structure
 
 After sweeping dozens of config combinations, the **single biggest quality
 fix is prompt structure**, not any hyperparameter:
